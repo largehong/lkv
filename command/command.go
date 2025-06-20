@@ -3,8 +3,10 @@ package command
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -41,6 +43,13 @@ func (c *Command) SetWorkDirecotry(dir string) *Command {
 func (c *Command) SetTimeout(timeout int64) *Command {
 	c.timeout = timeout
 	return c
+}
+
+func (c *Command) String() string {
+	if len(c.args) == 0 {
+		return c.name
+	}
+	return fmt.Sprintf("%s %s", c.name, strings.Join(c.args, " "))
 }
 
 func (c *Command) RunWithPipe(stdout, stderr io.Writer) (err error) {

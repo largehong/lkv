@@ -1,0 +1,11 @@
+version: "3"
+
+tasks:
+  build:
+    cmds:
+      - go build -o lkv cmd/*.go
+  
+  run:
+    dir: ./examples
+    cmds:
+      - go run ../cmd/*.go 

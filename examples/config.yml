@@ -1,0 +1,21 @@
+log:
+  level: debug
+
+interval: 3
+max: 100
+templates: ./templates
+
+watch:
+  type: etcdv3
+  config:
+    endpoints:
+      - 127.0.0.1:2379
+  prefixes:
+    - /http
+    - /tcp
+
+processors:
+  - src: api.lovezsh.com.conf.tpl
+    dst: /tmp/api.lovezsh.com.conf
+    prefixes:
+      - /http/api.lovezsh.com/services
