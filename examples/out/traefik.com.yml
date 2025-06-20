@@ -1,0 +1,26 @@
+# 生成时间: 1750437750
+# traefik docs: https://doc.traefik.io/traefik/routing/providers/kv/
+http:
+    routers:
+        order:
+            service: order
+            rule: Host(`api.lovezsh.com`) && PathPrefix(`/api/v1/order`)
+            entryPoints:
+                - api
+            
+        authorization:
+            service: authorization
+            rule: Host(`api.lovezsh.com`) && PathPrefix(`/api/v1/authorization`)
+            entryPoints:
+                - api
+            
+    services:
+        order:
+            loadBalancer:
+                - http://127.0.0.1:3000
+                - http://127.0.0.1:3001
+
+        authorization:
+            loadBalancer:
+                - http://127.0.0.1:3003
+                - http://127.0.0.1:3004

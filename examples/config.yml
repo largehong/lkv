@@ -15,6 +15,6 @@ watch:
 
 processors:
   - src: traefik.com.conf.tpl
-    dst: /tmp/traefik.com.conf
+    dst: /tmp/traefik.com.yml
     prefixes:
       - /traefik/http
