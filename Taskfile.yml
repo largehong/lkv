@@ -1,5 +1,8 @@
 version: "3"
 
+env:
+  ETCDCTL: '{{ .ETCDCTL | default "/bin/etcdctl" }}'
+
 tasks:
   build:
     cmds:
@@ -8,4 +11,18 @@ tasks:
   run:
     dir: ./examples
     cmds:
-      - go run ../cmd/*.go 
+      - go run ../cmd/*.go
+
+  etcdv3:treafik:
+    cmds:
+      - '{{ .ETCDCTL }} put /traefik/http/routers/order/service order'
+      - '{{ .ETCDCTL }} put /traefik/http/routers/order/entrypoints/0 api'
+      - "{{ .ETCDCTL }} put /traefik/http/routers/order/rule 'Host(`api.lovezsh.com`) && PathPrefix(`/api/v1/order`)'"
+      - '{{ .ETCDCTL }} put /traefik/http/routers/authorization/service authorization'
+      - '{{ .ETCDCTL }} put /traefik/http/routers/authorization/entrypoints/0 api'
+      - "{{ .ETCDCTL }} put /traefik/http/routers/authorization/rule 'Host(`api.lovezsh.com`) && PathPrefix(`/api/v1/authorization`)'"
+      - '{{ .ETCDCTL }} put /traefik/http/services/order/loadbalancer/servers/0/url http://127.0.0.1:3000'
+      - '{{ .ETCDCTL }} put /traefik/http/services/order/loadbalancer/servers/1/url http://127.0.0.1:3001'
+      - '{{ .ETCDCTL }} put /traefik/http/services/authorization/loadbalancer/servers/0/url http://127.0.0.1:3003'
+      - '{{ .ETCDCTL }} put /traefik/http/services/authorization/loadbalancer/servers/1/url http://127.0.0.1:3004'
+      

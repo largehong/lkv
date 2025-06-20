@@ -11,11 +11,10 @@ watch:
     endpoints:
       - 127.0.0.1:2379
   prefixes:
-    - /http
-    - /tcp
+    - /traefik
 
 processors:
-  - src: api.lovezsh.com.conf.tpl
-    dst: /tmp/api.lovezsh.com.conf
+  - src: traefik.com.conf.tpl
+    dst: /tmp/traefik.com.conf
     prefixes:
-      - /http/services
+      - /traefik/http
