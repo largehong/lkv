@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+
+	"github.com/dlclark/regexp2"
 )
 
 type MemKV struct {
@@ -92,11 +94,34 @@ func (m *MemKV) GetWithPrefix(prefix string) (items []KV) {
 	return items
 }
 
+func (m *MemKV) GetWithRegexp(expr string) (items []KV, err error) {
+	r, err := regexp2.Compile(expr, regexp2.RE2)
+	if err != nil {
+		return nil, err
+	}
+
+	m.lock.RLock()
+	defer m.lock.RUnlock()
+
+	items = make([]KV, 0)
+	for k, v := range m.data {
+		ok, err := r.MatchString(k)
+		if err != nil {
+			return nil, err
+		}
+		if ok {
+			items = append(items, KV{Key: k, Value: v})
+		}
+	}
+	return items, nil
+}
+
 func (m *MemKV) FuncMaps() map[string]any {
 	return map[string]any{
 		"get":   m.Get,
 		"gets":  m.Gets,
 		"getp":  m.GetWithPrefix,
+		"getr":  m.GetWithRegexp,
 		"exist": m.Exists,
 	}
 }

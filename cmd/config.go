@@ -24,16 +24,16 @@ type Processor struct {
 	Src      string   `yaml:"src"`
 	Dst      string   `yaml:"dst"`
 	Prefixes []string `yaml:"prefixes"`
-	Hook     *Hook    `yaml:"hook"`
+	Hook     Hook     `yaml:"hook"`
 }
 
 type Config struct {
-	Log        *Log         `yaml:"log"`
-	Interval   int          `yaml:"interval"`
-	Max        int          `yaml:"max"`
-	Templates  string       `yaml:"templates"`
-	Watch      Watch        `yaml:"watch"`
-	Processors []*Processor `yaml:"processors"`
+	Log        Log         `yaml:"log"`
+	Interval   int         `yaml:"interval"`
+	Max        int         `yaml:"max"`
+	Templates  string      `yaml:"templates"`
+	Watch      Watch       `yaml:"watch"`
+	Processors []Processor `yaml:"processors"`
 }
 
 func ParseFromYAML(filename string) (config *Config, err error) {

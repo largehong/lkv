@@ -18,4 +18,4 @@ processors:
   - src: api.lovezsh.com.conf.tpl
     dst: /tmp/api.lovezsh.com.conf
     prefixes:
-      - /http/api.lovezsh.com/services
+      - /http/services

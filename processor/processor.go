@@ -32,6 +32,7 @@ func New(tpl *template.Template, src, dst, after string) (processor *Processor) 
 }
 
 func (processor *Processor) Redenering() {
+	logrus.Debugf("starting render %s", processor.src)
 	filename := filepath.Join(os.TempDir(), uuid.New().String())
 	src, err := os.OpenFile(filename, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {

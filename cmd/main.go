@@ -1,16 +1,37 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/largehong/lkv/engine"
 	"github.com/largehong/lkv/memkv"
 	"github.com/largehong/lkv/processor"
 	"github.com/largehong/lkv/watch"
+	_ "github.com/largehong/lkv/watch/etcdv3"
+	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )
+
+func GetLogLevel(level string) logrus.Level {
+	switch strings.ToLower(level) {
+	case "debug":
+		return logrus.DebugLevel
+	case "warn":
+		return logrus.WarnLevel
+	case "info":
+		return logrus.InfoLevel
+	case "error":
+		return logrus.ErrorLevel
+	case "fatal":
+		return logrus.FatalLevel
+	default:
+		return logrus.InfoLevel
+	}
+}
 
 func main() {
 	app := &cli.App{
@@ -20,7 +41,7 @@ func main() {
 			&cli.StringFlag{
 				Name:    "config",
 				Aliases: []string{"c"},
-				Value:   "./config.yaml",
+				Value:   "./config.yml",
 				Usage:   "configuration file path",
 			},
 			&cli.StringFlag{
@@ -54,23 +75,29 @@ func main() {
 
 			SetConfigFromCLI(ctx, config)
 
+			logrus.SetLevel(GetLogLevel(config.Log.Level))
+			logrus.SetFormatter(&logrus.JSONFormatter{})
+
 			kv := memkv.New()
 
 			e := engine.New(kv, config.Max, config.Interval)
+
+			tpls, err := template.New("lkv").Funcs(kv.FuncMaps()).Funcs(processor.FuncMaps()).ParseFS(os.DirFS(config.Templates), "*.tpl")
+			if err != nil {
+				return err
+			}
 
 			w, err := watch.New(config.Watch.Type, config.Watch.Config, config.Watch.Prefixes, e.Callback)
 			if err != nil {
 				return err
 			}
 
-			tpls, err := template.ParseFS(os.DirFS(config.Templates), "*.tpl")
-			if err != nil {
-				return err
-			}
-			tpls.Funcs(kv.FuncMaps())
-
 			for _, item := range config.Processors {
-				p := processor.New(tpls, item.Src, item.Dst, item.Hook.After)
+				tpl := tpls.Lookup(item.Src)
+				if tpl == nil {
+					return errors.New("not found template: " + item.Src)
+				}
+				p := processor.New(tpl, item.Src, item.Dst, item.Hook.After)
 				for _, prefix := range item.Prefixes {
 					e.Register(prefix, p)
 				}
@@ -82,7 +109,7 @@ func main() {
 			}
 			go e.Run()
 			e.Callback(kvs...)
-			return nil
+			select {}
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
