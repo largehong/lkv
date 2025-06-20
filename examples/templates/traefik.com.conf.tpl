@@ -1,7 +1,7 @@
 # 生成时间: {{ timestamp }}
 # traefik docs: https://doc.traefik.io/traefik/routing/providers/kv/
-{{ $RouterKeys := getr `^/traefik/http/routers/.*` | keys -}}
-{{ $RouterMatched := regexps `^/traefik/http/routers/(?<Name>\w+)/.*` $RouterKeys -}}
+{{ $RouterKeys := getr `^/traefik/http/routers/\w+/service` | keys -}}
+{{ $RouterMatched := regexps `^/traefik/http/routers/(?<Name>\w+)/service` $RouterKeys -}}
 {{ $Routers := unique $RouterMatched.Name -}}
 http:
     routers:
@@ -16,8 +16,8 @@ http:
                 - {{ get $EntryPointKey }}
             {{ end -}}
 {{- end }}
-{{- $ServiceKeys := getr `^/traefik/http/services/.*` | keys -}}
-{{ $ServiceMatched := regexps `^/traefik/http/services/(?<Name>\w+)/.*` $ServiceKeys -}}
+{{- $ServiceKeys := getr `^/traefik/http/services/\w+/loadbalancer/servers/\d+/url` | keys -}}
+{{ $ServiceMatched := regexps `^/traefik/http/services/(?<Name>\w+)/loadbalancer/servers/\d+/url` $ServiceKeys -}}
 {{ $Services := unique $ServiceMatched.Name }}
     services:
 {{- range $service := $Services }}
