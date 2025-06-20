@@ -77,11 +77,15 @@ func (engine *Engine) handle(kvs ...watch.KV) {
 
 	for _, kv := range kvs {
 		//更新本地存储
-		var v any
-		if err := json.Unmarshal([]byte(kv.Value), &v); err == nil {
-			engine.kv.Set(kv.Key, v)
+		if kv.Value == "" {
+			engine.kv.Del(kv.Key)
 		} else {
-			engine.kv.Set(kv.Key, kv.Value)
+			var v any
+			if err := json.Unmarshal([]byte(kv.Value), &v); err == nil {
+				engine.kv.Set(kv.Key, v)
+			} else {
+				engine.kv.Set(kv.Key, kv.Value)
+			}
 		}
 
 		//获取订阅变更的processor，同时进行去重，避免多次通知

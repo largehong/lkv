@@ -61,6 +61,13 @@ func (m *MemKV) Get(key string) (value any, err error) {
 	return v, nil
 }
 
+func (m *MemKV) Del(key string) {
+	m.lock.Lock()
+	defer m.lock.Unlock()
+
+	delete(m.data, key)
+}
+
 type KV struct {
 	Key   string
 	Value any
