@@ -72,6 +72,10 @@ func (engine *Engine) Run() {
 	}
 }
 
+func (engine *Engine) Once(kvs ...watch.KV) {
+	engine.handle(kvs...)
+}
+
 func (engine *Engine) handle(kvs ...watch.KV) {
 	need := make([]*processor.Processor, 0)
 

@@ -12,6 +12,11 @@ tasks:
     dir: ./examples
     cmds:
       - go run ../cmd/*.go
+  
+  once:
+    dir: ./examples
+    cmds:
+      - go run ../cmd/*.go --once
 
   etcdv3:treafik:
     cmds:

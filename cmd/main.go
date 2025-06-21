@@ -66,6 +66,11 @@ func main() {
 				Value:   3,
 				Usage:   "interval",
 			},
+			&cli.BoolFlag{
+				Name:  "once",
+				Usage: "run once",
+				Value: false,
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			config, err := ParseFromYAML(ctx.String("config"))
@@ -106,6 +111,11 @@ func main() {
 			kvs, err := w.Get()
 			if err != nil {
 				return err
+			}
+
+			if ctx.Bool("once") {
+				e.Once(kvs...)
+				return nil
 			}
 			go e.Run()
 			e.Callback(kvs...)
