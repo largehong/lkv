@@ -2,6 +2,7 @@ package processor
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
@@ -101,5 +102,6 @@ func FuncMaps() map[string]any {
 		"now":       time.Now,
 		"timestamp": time.Now().Unix,
 		"sprintf":   fmt.Sprintf,
+		"urlparse":  url.Parse,
 	}
 }
