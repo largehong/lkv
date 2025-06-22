@@ -16,6 +16,8 @@ type Etcdv3 struct {
 
 type Config struct {
 	Endpoints []string `yaml:"endpoints" mapstructure:"endpoints"`
+	User      string   `yaml:"user" mapstructure:"user"`
+	Password  string   `yaml:"password" mapstructure:"password"`
 }
 
 func init() {
@@ -29,6 +31,8 @@ func New(config any, prefixes []string, callback func(...watch.KV)) (watch.Clien
 	}
 	client, err := etcdv3.New(etcdv3.Config{
 		Endpoints: c.Endpoints,
+		Username:  c.User,
+		Password:  c.Password,
 	})
 	if err != nil {
 		return nil, err

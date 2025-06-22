@@ -2,6 +2,8 @@ version: "3"
 
 env:
   ETCDCTL: '{{ .ETCDCTL | default "/bin/etcdctl" }}'
+  ETCD_USER: '{{ .ETCD_USER | default "root" }}'
+  ETCD_PASSWORD: '{{ .ETCD_PASSWORD | default "admin" }}'
 
 tasks:
   build:
@@ -20,18 +22,18 @@ tasks:
 
   etcdv3:traefik:config:
     cmds:
-      - '{{ .ETCDCTL }} put /traefik/http/routers/order/service order'
-      - '{{ .ETCDCTL }} put /traefik/http/routers/order/entrypoints/0 api'
-      - "{{ .ETCDCTL }} put /traefik/http/routers/order/rule 'Host(`api.lovezsh.com`) && PathPrefix(`/api/v1/order`)'"
-      - '{{ .ETCDCTL }} put /traefik/http/routers/authorization/service authorization'
-      - '{{ .ETCDCTL }} put /traefik/http/routers/authorization/entrypoints/0 api'
-      - "{{ .ETCDCTL }} put /traefik/http/routers/authorization/rule 'Host(`api.lovezsh.com`) && PathPrefix(`/api/v1/authorization`)'"
-      - '{{ .ETCDCTL }} put /traefik/http/services/order/loadbalancer/servers/0/url http://127.0.0.1:3000'
-      - '{{ .ETCDCTL }} put /traefik/http/services/order/loadbalancer/servers/1/url http://127.0.0.1:3001'
-      - '{{ .ETCDCTL }} put /traefik/http/services/authorization/loadbalancer/servers/0/url http://127.0.0.1:3003'
-      - '{{ .ETCDCTL }} put /traefik/http/services/authorization/loadbalancer/servers/1/url http://127.0.0.1:3004'
+      - '{{ .ETCDCTL }} put --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} /traefik/http/routers/order/service order'
+      - '{{ .ETCDCTL }} put --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} /traefik/http/routers/order/entrypoints/0 api'
+      - "{{ .ETCDCTL }} put --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} /traefik/http/routers/order/rule 'Host(`api.lovezsh.com`) && PathPrefix(`/api/v1/order`)'"
+      - '{{ .ETCDCTL }} put --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} /traefik/http/routers/authorization/service authorization'
+      - '{{ .ETCDCTL }} put --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} /traefik/http/routers/authorization/entrypoints/0 api'
+      - "{{ .ETCDCTL }} put --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} /traefik/http/routers/authorization/rule 'Host(`api.lovezsh.com`) && PathPrefix(`/api/v1/authorization`)'"
+      - '{{ .ETCDCTL }} put --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} /traefik/http/services/order/loadbalancer/servers/0/url http://127.0.0.1:3000'
+      - '{{ .ETCDCTL }} put --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} /traefik/http/services/order/loadbalancer/servers/1/url http://127.0.0.1:3001'
+      - '{{ .ETCDCTL }} put --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} /traefik/http/services/authorization/loadbalancer/servers/0/url http://127.0.0.1:3003'
+      - '{{ .ETCDCTL }} put --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} /traefik/http/services/authorization/loadbalancer/servers/1/url http://127.0.0.1:3004'
   
   etcdv3:traefik:clean:
     cmds:
-      - '{{ .ETCDCTL }} del --prefix /traefik'
+      - '{{ .ETCDCTL }} del --user {{ .ETCD_USER}} --password {{ .ETCD_PASSWORD}} --prefix /traefik'
       
