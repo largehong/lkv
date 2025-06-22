@@ -18,7 +18,7 @@ tasks:
     cmds:
       - go run ../cmd/*.go --once
 
-  etcdv3:treafik:
+  etcdv3:traefik:config:
     cmds:
       - '{{ .ETCDCTL }} put /traefik/http/routers/order/service order'
       - '{{ .ETCDCTL }} put /traefik/http/routers/order/entrypoints/0 api'
@@ -30,4 +30,8 @@ tasks:
       - '{{ .ETCDCTL }} put /traefik/http/services/order/loadbalancer/servers/1/url http://127.0.0.1:3001'
       - '{{ .ETCDCTL }} put /traefik/http/services/authorization/loadbalancer/servers/0/url http://127.0.0.1:3003'
       - '{{ .ETCDCTL }} put /traefik/http/services/authorization/loadbalancer/servers/1/url http://127.0.0.1:3004'
+  
+  etcdv3:traefik:clean:
+    cmds:
+      - '{{ .ETCDCTL }} del --prefix /traefik'
       

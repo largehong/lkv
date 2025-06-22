@@ -19,6 +19,6 @@ processors:
     prefixes:
       - /traefik/http
   - src: nginx.traefik.com.conf.tpl
-    dst: /tmp/nginx.treafik.com.conf
+    dst: /tmp/nginx.traefik.com.conf
     prefixes:
       - /traefik/http

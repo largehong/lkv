@@ -21,6 +21,9 @@ server {
     {{ range $Service := $Services }}
     location /api/v1/{{ $Service }}/ {
         proxy_pass http://{{ $Service }}/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $http_x_forwarded_for;
     }
     {{ end }}
 }
