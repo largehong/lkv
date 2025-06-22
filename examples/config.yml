@@ -1,5 +1,6 @@
 log:
   level: debug
+  format: text
 
 interval: 3
 max: 100

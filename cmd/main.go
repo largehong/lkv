@@ -33,6 +33,17 @@ func GetLogLevel(level string) logrus.Level {
 	}
 }
 
+func GetLogFormat(f string) logrus.Formatter {
+	switch strings.ToLower(f) {
+	case "json":
+		return &logrus.JSONFormatter{}
+	case "text":
+		return &logrus.TextFormatter{DisableColors: true}
+	default:
+		return &logrus.TextFormatter{}
+	}
+}
+
 func main() {
 	app := &cli.App{
 		Name:  "lkv",
@@ -48,6 +59,11 @@ func main() {
 				Name:  "log.level",
 				Value: "info",
 				Usage: "log level",
+			},
+			&cli.StringFlag{
+				Name:  "log.format",
+				Value: "text",
+				Usage: "log format, json or text",
 			},
 			&cli.StringFlag{
 				Name:  "templates",
@@ -81,7 +97,7 @@ func main() {
 			SetConfigFromCLI(ctx, config)
 
 			logrus.SetLevel(GetLogLevel(config.Log.Level))
-			logrus.SetFormatter(&logrus.JSONFormatter{})
+			logrus.SetFormatter(GetLogFormat(config.Log.Format))
 
 			kv := memkv.New()
 
@@ -131,6 +147,10 @@ func main() {
 func SetConfigFromCLI(ctx *cli.Context, config *Config) {
 	if config.Log.Level == "" {
 		config.Log.Level = ctx.String("log.level")
+	}
+
+	if config.Log.Format == "" {
+		config.Log.Format = ctx.String("log.format")
 	}
 
 	if config.Interval <= 0 {
