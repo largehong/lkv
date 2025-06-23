@@ -58,6 +58,7 @@ func (engine *Engine) Run() {
 	for {
 		select {
 		case kvs := <-engine.ch:
+			engine.updateKv(kvs...)
 			buf = append(buf, kvs...)
 			if len(buf) > engine.max {
 				engine.handle(buf...)
@@ -72,13 +73,7 @@ func (engine *Engine) Run() {
 	}
 }
 
-func (engine *Engine) Once(kvs ...watch.KV) {
-	engine.handle(kvs...)
-}
-
-func (engine *Engine) handle(kvs ...watch.KV) {
-	need := make([]*processor.Processor, 0)
-
+func (engine *Engine) updateKv(kvs ...watch.KV) {
 	for _, kv := range kvs {
 		//更新本地存储
 		if kv.Value == "" {
@@ -91,7 +86,17 @@ func (engine *Engine) handle(kvs ...watch.KV) {
 				engine.kv.Set(kv.Key, kv.Value)
 			}
 		}
+	}
+}
 
+func (engine *Engine) Once(kvs ...watch.KV) {
+	engine.handle(kvs...)
+}
+
+func (engine *Engine) handle(kvs ...watch.KV) {
+	need := make([]*processor.Processor, 0)
+
+	for _, kv := range kvs {
 		//获取订阅变更的processor，同时进行去重，避免多次通知
 		for prefix, processors := range engine.processors {
 			if strings.HasPrefix(kv.Key, prefix) {
