@@ -40,7 +40,7 @@ func GetLogFormat(f string) logrus.Formatter {
 	case "text":
 		return &logrus.TextFormatter{DisableColors: true}
 	default:
-		return &logrus.TextFormatter{}
+		return &logrus.TextFormatter{DisableColors: true}
 	}
 }
 
