@@ -1,0 +1,18 @@
+[Unit]
+Description=lkv
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/data/lkv
+ExecStart=/usr/bin/lkv -c /etc/lkv/config.yml
+Restart=always
+RestartSec=2s
+ProtectSystem=full
+PrivateDevices=yes
+PrivateTmp=yes
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
